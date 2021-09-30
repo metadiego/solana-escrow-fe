@@ -57,7 +57,7 @@ function App() {
       setEscrowInitializerYTokenAccount(initializerYTokenAccount);
       setEscrowExpectedAmount(expectedAmount);
     } catch (err) {
-      alert(`Failed to take trade: ${err.message}`);
+      alert(`Failed to initialize escrow: ${err.message}`);
     }
   }
 
