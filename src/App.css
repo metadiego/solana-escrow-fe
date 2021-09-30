@@ -1,0 +1,21 @@
+.app {
+  margin: 20px;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.text-field {
+  display: flex;
+  flex-direction: column;
+  max-width: 30vw;
+  margin: 20px 0;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-around;
+}
