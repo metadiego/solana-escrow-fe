@@ -1,16 +1,16 @@
-# Getting Started with Create React App
+# Solana Escrow FE Client
 
 ## What is?
-FE Client for: https://paulx.dev/blog/2021/01/14/programming-on-solana-an-introduction/
+FE Client for: https://paulx.dev/blog/2021/01/14/programming-on-solana-an-introduction/ \
 Based on: https://github.com/metadiego/solana-escrow-fe
 
-## To run this FE:
+## To run:
 
 #### `npm install`
 
 Install all required dependencies
 
-### `npm start`
+#### `npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
