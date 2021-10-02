@@ -3,27 +3,24 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import * as escrowinit from './util/initEscrow';
-import * as escrowtrade from './util/takeTrade';
+import * as escrowRespond from './util/respondEscrow';
 
 import './App.css';
 
-
 function App() {
-  // Alice inputs
-  let [alicePrivateKey, setAlicePrivateKey] = useState('');
-  let [aliceProgramId, setAliceProgramId] = useState('');
-  let [aliceXTokenAcctPubKey, setAliceXTokenAcctPubKey] = useState('');
-  let [aliceXTokensToSend, setAliceXTokensToSend] = useState(0);
-  let [aliceYTokenAcctPubKey, setAliceYTokenAcctPubKey] = useState('');
-  let [aliceYTokensExpected, setAliceYTokensExpected] = useState(0);
+  // Initializer inputs
+  let [initializerPublicKey, setInitializerPublicKey] = useState('');
+  let [initializerPrivateKey, setInitializerPrivateKey] = useState('');
+  let [initializerQuestionId, setInitializerQuestionId] = useState('');
+  let [initializerQuestionBid, setInitializerQuestionBid] = useState(0);
+  let [initializerEscrowProgramId, setInitializerEscrowProgramId] = useState('');
+  let [initializerResponderPublicKey, setInitializerResponderPublicKey] = useState('');
 
-  // Bobs inputs
-  let [bobPrivateKey, setBobPrivateKey] = useState('');
-  let [bobProgramId, setBobProgramId] = useState('');
-  let [bobXTokenAcctPubKey, setBobXTokenAcctPubKey] = useState('');
-  let [bobYTokenAcctPubKey, setBobYTokenAcctPubKey] = useState('');
-  let [bobEscrowAcctPubKey, setBobEscrowAcctPubKey] = useState('');
-  let [bobXTokensExpected, setBobXTokensExpected] = useState('');
+  // Receiver inputs
+  let [responderPublicKey, setResponderPublicKey] = useState('');
+  let [responderPrivateKey, setResponderPrivateKey] = useState('');
+  let [responderTempTokenAcctPublicKey, setResponderTempTokenAcctPublicKey] = useState('');
+  let [responderEscrowProgramId, setResponderEscrowProgramId] = useState('');
 
   // Escrow State
   let [escrowAccountPubkey, setEscrowAccountPubkey] = useState('--');
@@ -31,62 +28,49 @@ function App() {
   let [escrowInitializerAccountPubkey, setEscrowInitializerAccountPubkey] = useState('--');
   let [escrowXTokenTempAccountPubkey, setEscrowXTokenTempAccountPubkey] = useState('--');
   let [escrowInitializerYTokenAccount, setEscrowInitializerYTokenAccount] = useState('--');
-  let [escrowExpectedAmount, setEscrowExpectedAmount] = useState('--');
 
-  const handleAliceInitEscrow = async () => {
+  const handleInitEscrow = async () => {
     try {
-      const {
-        escrowAccountPubkey,
-        isInitialized,
-        initializerAccountPubkey,
-        XTokenTempAccountPubkey,
-        initializerYTokenAccount,
-        expectedAmount
-      } = await escrowinit.initEscrow(
-        alicePrivateKey,
-        aliceXTokenAcctPubKey,
-        aliceXTokensToSend,
-        aliceYTokenAcctPubKey,
-        aliceYTokensExpected,
-        aliceProgramId
-      );
-      setEscrowAccountPubkey(escrowAccountPubkey);
-      setEscrowIsInitialized(isInitialized);
-      setEscrowInitializerAccountPubkey(initializerAccountPubkey);
-      setEscrowXTokenTempAccountPubkey(XTokenTempAccountPubkey);
-      setEscrowInitializerYTokenAccount(initializerYTokenAccount);
-      setEscrowExpectedAmount(expectedAmount);
+      // const {
+      //   escrowAccountPubkey,
+      //   isInitialized,
+      //   initializerAccountPubkey
+      // } = await escrowinit.initEscrow(
+      //   initializerPublicKey,
+      //   initializerPrivateKey,
+      //   initializerQuestionId,
+      //   initializerQuestionBid,
+      //   escrowProgramId,
+      //   receiverPublicKey
+      // );
+      // setEscrowAccountPubkey(escrowAccountPubkey);
+      // setEscrowIsInitialized(isInitialized);
+      // setEscrowInitializerAccountPubkey(initializerAccountPubkey);
     } catch (err) {
       alert(`Failed to initialize escrow: ${err.message}`);
     }
   }
 
-  const handleAliceReset = () => {
-    setAlicePrivateKey('');
-    setAliceProgramId('');
-    setAliceXTokenAcctPubKey('');
-    setAliceXTokensToSend(0);
-    setAliceYTokenAcctPubKey('');
-    setAliceYTokensExpected(0);
-    setEscrowAccountPubkey('--');
-    setEscrowIsInitialized('--');
-    setEscrowInitializerAccountPubkey('--');
-    setEscrowXTokenTempAccountPubkey('--');
-    setEscrowInitializerYTokenAccount('--');
-    setEscrowExpectedAmount('--');
+  const handleInitializerReset = () => {
+    setInitializerPublicKey('');
+    setInitializerPrivateKey('');
+    setInitializerQuestionId('');
+    setInitializerQuestionBid(0);
+    initializerResponderPublicKey('');
+    setInitializerEscrowProgramId('');
+
+    // setEscrowAccountPubkey('--');
+    // setEscrowIsInitialized('--');
+    // setEscrowInitializerAccountPubkey('--');
+    // setEscrowXTokenTempAccountPubkey('--');
+    // setEscrowInitializerYTokenAccount('--');
+    // setEscrowExpectedAmount('--');
 
   }
 
-  const handleBobTakeTrade = async () => {
+  const handleRespond = async () => {
     try {
-      await escrowtrade.takeTrade(
-        bobPrivateKey,
-        bobEscrowAcctPubKey,
-        bobXTokenAcctPubKey,
-        bobYTokenAcctPubKey,
-        bobXTokensExpected,
-        bobProgramId
-        );
+      // await escrowRespond.respond();
         alert("Success! Alice and Bob have traded their tokens and all temporary accounts have been closed");
 
     } catch (err) {
@@ -94,52 +78,55 @@ function App() {
     }
   }
 
-  const handleBobReset = () => {
-    setBobPrivateKey('');
-    setBobProgramId('');
-    setBobXTokenAcctPubKey('');
-    setBobYTokenAcctPubKey('');
-    setBobEscrowAcctPubKey('');
-    setBobXTokensExpected('');
+  const handleResponderReset = () => {
+    setResponderPublicKey('');
+    setResponderPrivateKey('');
+    setResponderTempTokenAcctPublicKey('');
+    setResponderEscrowProgramId('');
   }
 
   return (
     <div className="app">
       <h1>Escrow FE</h1>
+      <p>For reference: Initializer wants to ask Responder a question. So Initializer creates a
+      new escrow where they place the funds that they are is willing to pay Responder if
+      they answer the question.</p>
       <div className="app-container">
         <Box
           component="form"
           noValidate
           autoComplete="off"
         >
-          <h1>Alice's Data</h1>
+          <h1>Initializer Data</h1>
           <div className="text-field">
-            <p>Throwaway private key (as byte array from sollet.io, without the '[]')</p>
-            <TextField id="outlined-basic" variant="outlined" value={alicePrivateKey} onChange={(evt) => setAlicePrivateKey(evt.target.value)}/>
+            <p>Public Key of initializer:</p>
+            <TextField id="outlined-basic" variant="outlined" value={initializerPublicKey} onChange={(evt) => setInitializerPublicKey(evt.target.value)}/>
           </div>
           <div className="text-field">
-            <p>Program id</p>
-            <TextField id="outlined-basic" variant="outlined" value={aliceProgramId} onChange={(evt) => setAliceProgramId(evt.target.value)}/>
+            <p>Private key of initializer (as byte array from sollet.io, without the '[]'):</p>
+            <TextField id="outlined-basic" variant="outlined" value={initializerPrivateKey} onChange={(evt) => setInitializerPrivateKey(evt.target.value)}/>
           </div>
           <div className="text-field">
-            <p>Alice's X token account pubkey</p>
-            <TextField id="outlined-basic" variant="outlined" value={aliceXTokenAcctPubKey} onChange={(evt) => setAliceXTokenAcctPubKey(evt.target.value)}/>
+            <p>Initializer Question ID:</p>
+            <TextField id="outlined-basic" variant="outlined" value={initializerQuestionId} onChange={(evt) => setInitializerQuestionId(evt.target.value)}/>
           </div>
           <div className="text-field">
-            <p>Amount of X tokens to send to escrow</p>
-            <TextField id="outlined-basic" variant="outlined" value={aliceXTokensToSend} onChange={(evt) => setAliceXTokensToSend(evt.target.value)}/>
+            <p>Initializer Question Bid:</p>
+            <TextField id="outlined-basic" variant="outlined" value={initializerQuestionBid} onChange={(evt) => setInitializerQuestionBid(evt.target.value)}/>
+          </div>
+
+          <div className="text-field">
+            <p>Responder Public Key:</p>
+            <TextField id="outlined-basic" variant="outlined" value={initializerResponderPublicKey} onChange={(evt) => setInitializerResponderPublicKey(evt.target.value)}/>
           </div>
           <div className="text-field">
-            <p>Alice's Y token account pubkey</p>
-            <TextField id="outlined-basic" variant="outlined" value={aliceYTokenAcctPubKey} onChange={(evt) => setAliceYTokenAcctPubKey(evt.target.value)}/>
+            <p>Escrow Program ID:</p>
+            <TextField id="outlined-basic" variant="outlined" value={initializerEscrowProgramId} onChange={(evt) => setInitializerEscrowProgramId(evt.target.value)}/>
           </div>
-          <div className="text-field">
-            <p>Amount of Y tokens Alice wants</p>
-            <TextField id="outlined-basic" variant="outlined" value={aliceYTokensExpected} onChange={(evt) => setAliceYTokensExpected(evt.target.value)}/>
-          </div>
+
           <div className="button-container">
-            <Button size="large"  variant="contained" onClick={() => handleAliceInitEscrow()}>Init Escrow</Button>
-            <Button size="large"  variant="contained" color="error" onClick={() => handleAliceReset()}>Reset Alice's Data</Button>
+            <Button size="large"  variant="contained" onClick={() => handleInitEscrow()}>Init Escrow</Button>
+            <Button size="large"  variant="contained" color="error" onClick={() => handleInitializerReset()}>Reset Initializers Data</Button>
           </div>
           <div className="text-field">
             <p>Escrow account:</p>
@@ -153,52 +140,34 @@ function App() {
             <p>Initializer account:</p>
             <p>{escrowInitializerAccountPubkey}</p>
           </div>
-          <div className="text-field">
-            <p>X token temp account:</p>
-            <p>{escrowXTokenTempAccountPubkey}</p>
-          </div>
-          <div className="text-field">
-            <p>Initializer Y token account:</p>
-            <p>{escrowInitializerYTokenAccount}</p>
-          </div>
-          <div className="text-field">
-            <p>Expected Amount:</p>
-            <p>{escrowExpectedAmount}</p>
-          </div>
         </Box>
         <Box
           component="form"
           noValidate
           autoComplete="off"
         >
-        <h1>Bob's Data:</h1>
+        <h1>Responder's Data:</h1>
           <div className="text-field">
-            <p>Throwaway private key (as byte array from sollet.io, without the '[]')</p>
-            <TextField id="outlined-basic" variant="outlined" value={bobPrivateKey} onChange={(evt) => setBobPrivateKey(evt.target.value)}/>
+            <p>Responders public key:</p>
+            <TextField id="outlined-basic" variant="outlined" value={responderPublicKey} onChange={(evt) => setResponderPublicKey(evt.target.value)}/>
+          </div>`
+          <div className="text-field">
+            <p>Responders private key (as byte array from sollet.io, without the '[]')</p>
+            <TextField id="outlined-basic" variant="outlined" value={responderPrivateKey} onChange={(evt) => setResponderPrivateKey(evt.target.value)}/>
+          </div>
+
+          <div className="text-field">
+            <p>Responders temporary token account pubkey:</p>
+            <TextField id="outlined-basic" variant="outlined" value={responderTempTokenAcctPublicKey} onChange={(evt) => setResponderTempTokenAcctPublicKey(evt.target.value)}/>
           </div>
           <div className="text-field">
-            <p>Program id</p>
-            <TextField id="outlined-basic" variant="outlined" value={bobProgramId} onChange={(evt) => setBobProgramId(evt.target.value)}/>
+            <p>Escrow Program ID:</p>
+            <TextField id="outlined-basic" variant="outlined" value={responderEscrowProgramId} onChange={(evt) => setResponderEscrowProgramId(evt.target.value)}/>
           </div>
-          <div className="text-field">
-            <p>Bobs's X token account pubkey</p>
-            <TextField id="outlined-basic" variant="outlined" value={bobXTokenAcctPubKey} onChange={(evt) => setBobXTokenAcctPubKey(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Bob's Y token account pubkey</p>
-            <TextField id="outlined-basic" variant="outlined" value={bobYTokenAcctPubKey} onChange={(evt) => setBobYTokenAcctPubKey(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Escrow account pubkey</p>
-            <TextField id="outlined-basic" variant="outlined" value={bobEscrowAcctPubKey} onChange={(evt) => setBobEscrowAcctPubKey(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Amount X tokens Bob wants</p>
-            <TextField id="outlined-basic" variant="outlined" value={bobXTokensExpected} onChange={(evt) => setBobXTokensExpected(evt.target.value)}/>
-          </div>
+
           <div className="button-container">
-            <Button size="large" variant="contained" onClick={() => handleBobTakeTrade()}>Take Trade</Button>
-            <Button size="large"  variant="contained" color="error" onClick={() => handleBobReset()}>Reset Bob's Data</Button>
+            <Button size="large" variant="contained" onClick={() => handleRespond()}>Respond</Button>
+            <Button size="large"  variant="contained" color="error" onClick={() => handleResponderReset()}>Reset Responder's Data</Button>
           </div>
         </Box>
       </div>

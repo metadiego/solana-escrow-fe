@@ -5,7 +5,7 @@ import { ESCROW_ACCOUNT_DATA_LAYOUT, EscrowLayout } from "./layout";
 
 const connection = new Connection("http://localhost:8899", 'singleGossip');
 
-export const takeTrade = async (
+export const respond = async (
     privateKeyByteArray: string,
     escrowAccountAddressString: string,
     takerXTokenAccountAddressString: string,
