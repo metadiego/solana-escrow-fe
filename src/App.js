@@ -1,5 +1,4 @@
 import {useState} from 'react';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import * as escrowinit from './util/initEscrow';
@@ -87,10 +86,10 @@ function App() {
     try {
       await escrowRespond.respond(
         responderPrivateKey,
-        escrowAccountPubkey,
         responderXTokenAccountPubkey,
         responderExpectedXTokenAmount,
         responderQuestionId,
+        escrowAccountPubkey,
         responderEscrowProgramId,
       );
       alert("Success! Responder has successfuly transacted with escrow.");
@@ -165,6 +164,61 @@ function App() {
               <p>{escrowInitializerAccountPubkey}</p>
             </div>
             <div className="text-field">
+              <p>Escrow X Token Temp Account Public Key:</p>
+              <p>{escrowXTokenTempAccountPubkey}</p>
+            </div>
+            <div className="text-field">
+              <p>Escrow Question ID:</p>
+              <p>{escrowQuestionId}</p>
+            </div>
+            <div className="text-field">
+              <p>Escrow Question Bid Ammount X Tokens:</p>
+              <p>{escrowQuestionBidAmountXTokens}</p>
+            </div>
+            <div className="text-field">
+              <p>Escrow Question Duration:</p>
+              <p>{escrowQuestionDuration}</p>
+            </div>
+          </div>
+        </div>
+        <div class="responder-container">
+          <div className="responder-inputs">
+            <h1>Respond:</h1>
+            <div className="text-field">
+              <p>Responder's private key (as byte array from sollet.io, without the '[]')</p>
+              <TextField id="outlined-basic" variant="outlined" value={responderPrivateKey} onChange={(evt) => setResponderPrivateKey(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p>Responder's token account pubkey:</p>
+              <TextField id="outlined-basic" variant="outlined" value={responderXTokenAccountPubkey} onChange={(evt) => setResponderXTokenAccountPubkey(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p>Responder's Question ID:</p>
+              <TextField id="outlined-basic" variant="outlined" value={responderQuestionId} onChange={(evt) => setResponderQuestionId(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p>Responder's Expected X Token Ammount:</p>
+              <TextField id="outlined-basic" variant="outlined" value={responderExpectedXTokenAmount} onChange={(evt) => setResponderExpectedXTokenAmount(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p>Escrow Program ID:</p>
+              <TextField id="outlined-basic" variant="outlined" value={responderEscrowProgramId} onChange={(evt) => setResponderEscrowProgramId(evt.target.value)}/>
+            </div>
+            <div className="button-container">
+              <Button size="large" variant="contained" onClick={() => handleRespond()}>Respond</Button>
+              <Button size="large"  variant="contained" color="error" onClick={() => handleResponderReset()}>Reset Responder's Data</Button>
+            </div>
+          </div>
+          <div className="responder-data">
+            <div className="text-field">
+              <p>Escrow account:</p>
+              <p>{escrowAccountPubkey}</p>
+            </div>
+            <div className="text-field">
+              <p>Is initialized:</p>
+              <p>{escrowIsInitialized}</p>
+            </div>
+            <div className="text-field">
               <p>Initializer account:</p>
               <p>{escrowInitializerAccountPubkey}</p>
             </div>
@@ -186,39 +240,6 @@ function App() {
             </div>
           </div>
         </div>
-        <Box
-          component="form"
-          noValidate
-          autoComplete="off"
-        >
-        <h1>Respond:</h1>
-
-          <div className="text-field">
-            <p>Responder's private key (as byte array from sollet.io, without the '[]')</p>
-            <TextField id="outlined-basic" variant="outlined" value={responderPrivateKey} onChange={(evt) => setResponderPrivateKey(evt.target.value)}/>
-          </div>
-
-          <div className="text-field">
-            <p>Responder's token account pubkey:</p>
-            <TextField id="outlined-basic" variant="outlined" value={responderXTokenAccountPubkey} onChange={(evt) => setResponderXTokenAccountPubkey(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Responder's Question ID:</p>
-            <TextField id="outlined-basic" variant="outlined" value={responderQuestionId} onChange={(evt) => setResponderQuestionId(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Responder's Expected X Token Ammount:</p>
-            <TextField id="outlined-basic" variant="outlined" value={responderExpectedXTokenAmount} onChange={(evt) => setResponderExpectedXTokenAmount(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Escrow Program ID:</p>
-            <TextField id="outlined-basic" variant="outlined" value={responderEscrowProgramId} onChange={(evt) => setResponderEscrowProgramId(evt.target.value)}/>
-          </div>
-          <div className="button-container">
-            <Button size="large" variant="contained" onClick={() => handleRespond()}>Respond</Button>
-            <Button size="large"  variant="contained" color="error" onClick={() => handleResponderReset()}>Reset Responder's Data</Button>
-          </div>
-        </Box>
       </div>
     </div>
   );
