@@ -114,86 +114,84 @@ function App() {
       new escrow where they place the funds that they are is willing to pay Responder if
       they answer the question.</p>
       <div className="app-container">
+        <div class="initializer-container">
+          <div className="initializer-inputs">
+            <h1>Initialize Escrow:</h1>
+            <div className="text-field">
+              <p>Private key of initializer (as byte array from sollet.io, without the '[]'):</p>
+              <TextField id="outlined-basic" variant="outlined" value={initializerPrivateKey} onChange={(evt) => setInitializerPrivateKey(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p>Initializer Token Temp Account Public Key:</p>
+              <TextField id="outlined-basic" variant="outlined" value={initializerTempTokenAccountPubkey} onChange={(evt) => setInitializerTempTokenAccountPubkey(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p>Responder Public Key:</p>
+              <TextField id="outlined-basic" variant="outlined" value={initializerResponderPublicKey} onChange={(evt) => setInitializerResponderPublicKey(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p>Initializer Question ID:</p>
+              <TextField id="outlined-basic" variant="outlined" value={initializerQuestionId} onChange={(evt) => setInitializerQuestionId(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p>Initializer Question Bid:</p>
+              <TextField id="outlined-basic" variant="outlined" value={initializerQuestionBid} onChange={(evt) => setInitializerQuestionBid(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p>Initializer Question Duration (seconds):</p>
+              <TextField id="outlined-basic" variant="outlined" value={initializerQuestionDurationSeconds} onChange={(evt) => setInitializerQuestionDurationSeconds(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p>Escrow Program ID:</p>
+              <TextField id="outlined-basic" variant="outlined" value={initializerEscrowProgramId} onChange={(evt) => setInitializerEscrowProgramId(evt.target.value)}/>
+            </div>
+
+            <div className="button-container">
+              <Button size="large"  variant="contained" onClick={() => handleInitEscrow()}>Init Escrow</Button>
+              <Button size="large"  variant="contained" color="error" onClick={() => handleInitializerReset()}>Reset Initializers Data</Button>
+            </div>
+          </div>
+          <div className="initializer-data">
+            <div className="text-field">
+              <p>Escrow account:</p>
+              <p>{escrowAccountPubkey}</p>
+            </div>
+            <div className="text-field">
+              <p>Is initialized:</p>
+              <p>{escrowIsInitialized}</p>
+            </div>
+            <div className="text-field">
+              <p>Initializer account:</p>
+              <p>{escrowInitializerAccountPubkey}</p>
+            </div>
+            <div className="text-field">
+              <p>Initializer account:</p>
+              <p>{escrowInitializerAccountPubkey}</p>
+            </div>
+            <div className="text-field">
+              <p>Escrow X Token Temp Account Public Key:</p>
+              <p>{escrowXTokenTempAccountPubkey}</p>
+            </div>
+            <div className="text-field">
+              <p>Escrow Question ID:</p>
+              <p>{escrowQuestionId}</p>
+            </div>
+            <div className="text-field">
+              <p>Escrow Question Bid Ammount X Tokens:</p>
+              <p>{escrowQuestionBidAmountXTokens}</p>
+            </div>
+            <div className="text-field">
+              <p>Escrow Question Duration:</p>
+              <p>{escrowQuestionDuration}</p>
+            </div>
+          </div>
+        </div>
         <Box
           component="form"
           noValidate
           autoComplete="off"
         >
-          <h1>Initializer Data:</h1>
-
-          <div className="text-field">
-            <p>Private key of initializer (as byte array from sollet.io, without the '[]'):</p>
-            <TextField id="outlined-basic" variant="outlined" value={initializerPrivateKey} onChange={(evt) => setInitializerPrivateKey(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Initializer Token Temp Account Public Key:</p>
-            <TextField id="outlined-basic" variant="outlined" value={initializerTempTokenAccountPubkey} onChange={(evt) => setInitializerTempTokenAccountPubkey(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Responder Public Key:</p>
-            <TextField id="outlined-basic" variant="outlined" value={initializerResponderPublicKey} onChange={(evt) => setInitializerResponderPublicKey(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Initializer Question ID:</p>
-            <TextField id="outlined-basic" variant="outlined" value={initializerQuestionId} onChange={(evt) => setInitializerQuestionId(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Initializer Question Bid:</p>
-            <TextField id="outlined-basic" variant="outlined" value={initializerQuestionBid} onChange={(evt) => setInitializerQuestionBid(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Initializer Question Duration (seconds):</p>
-            <TextField id="outlined-basic" variant="outlined" value={initializerQuestionDurationSeconds} onChange={(evt) => setInitializerQuestionDurationSeconds(evt.target.value)}/>
-          </div>
-          <div className="text-field">
-            <p>Escrow Program ID:</p>
-            <TextField id="outlined-basic" variant="outlined" value={initializerEscrowProgramId} onChange={(evt) => setInitializerEscrowProgramId(evt.target.value)}/>
-          </div>
-
-          <div className="button-container">
-            <Button size="large"  variant="contained" onClick={() => handleInitEscrow()}>Init Escrow</Button>
-            <Button size="large"  variant="contained" color="error" onClick={() => handleInitializerReset()}>Reset Initializers Data</Button>
-          </div>
-
-          <div className="text-field">
-            <p>Escrow account:</p>
-            <p>{escrowAccountPubkey}</p>
-          </div>
-          <div className="text-field">
-            <p>Is initialized:</p>
-            <p>{escrowIsInitialized}</p>
-          </div>
-          <div className="text-field">
-            <p>Initializer account:</p>
-            <p>{escrowInitializerAccountPubkey}</p>
-          </div>
-          <div className="text-field">
-            <p>Initializer account:</p>
-            <p>{escrowInitializerAccountPubkey}</p>
-          </div>
-          <div className="text-field">
-            <p>Escrow X Token Temp Account Public Key:</p>
-            <p>{escrowXTokenTempAccountPubkey}</p>
-          </div>
-          <div className="text-field">
-            <p>Escrow Question ID:</p>
-            <p>{escrowQuestionId}</p>
-          </div>
-          <div className="text-field">
-            <p>Escrow Question Bid Ammount X Tokens:</p>
-            <p>{escrowQuestionBidAmountXTokens}</p>
-          </div>
-          <div className="text-field">
-            <p>Escrow Question Duration:</p>
-            <p>{escrowQuestionDuration}</p>
-          </div>
-        </Box>
-        <Box
-          component="form"
-          noValidate
-          autoComplete="off"
-        >
-        <h1>Responder's Data:</h1>
+        <h1>Respond:</h1>
 
           <div className="text-field">
             <p>Responder's private key (as byte array from sollet.io, without the '[]')</p>
