@@ -8,6 +8,7 @@ const connection = new Connection("http://localhost:8899", 'singleGossip');
 export const initEscrow = async (
     privateKeyByteArray: string,
     initializerXTokenAccountPubkeyString: string,
+    responderAccountPubKeyString: string,
     escrowProgramIdString: string,
     questionId: number,
     questionBidAmountXTokens: number,
@@ -55,6 +56,7 @@ export const initEscrow = async (
         keys: [
             { pubkey: initializerAccount.publicKey, isSigner: true, isWritable: false },
             { pubkey: tempTokenAccount.publicKey, isSigner: false, isWritable: true },
+            { pubkey: new PublicKey(responderAccountPubKeyString), isSigner: false, isWritable: false },
             { pubkey: escrowAccount.publicKey, isSigner: false, isWritable: true },
             { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false},
             { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },

@@ -7,16 +7,16 @@ const connection = new Connection("http://localhost:8899", 'singleGossip');
 
 export const respond = async (
     privateKeyByteArray: string,
-    escrowAccountAddressString: string,
     responderXTokenAccountAddressString: string,
     responderExpectedXTokenAmount: number,
-    programIdString: string,
-    questionId: number
+    responderQuestionId: number,
+    escrowAccountAddressString: string,
+    escrowProgramIdString: string
 ) => {
     const responderAccount = new Account(privateKeyByteArray.split(',').map(s => parseInt(s)));
     const escrowAccountPubkey = new PublicKey(escrowAccountAddressString);
     const responderXTokenAccountPubkey = new PublicKey(responderXTokenAccountAddressString);
-    const programId = new PublicKey(programIdString);
+    const escrowProgramId = new PublicKey(escrowProgramIdString);
 
     let encodedEscrowState;
     try {
@@ -33,15 +33,15 @@ export const respond = async (
         questionBidAmount: new BN(decodedEscrowLayout.questionBidAmountXTokens, 8, "le")
     };
 
-    const PDA = await PublicKey.findProgramAddress([Buffer.from("escrow")], programId);
+    const PDA = await PublicKey.findProgramAddress([Buffer.from("escrow")], escrowProgramId);
 
     const respondInstruction = new TransactionInstruction({
-        programId,
+        programId: escrowProgramId,
         data: Buffer.from(
           Uint8Array.of(
             1,
             ...new BN(responderExpectedXTokenAmount).toArray("le", 8),
-            ...new BN(questionId).toArray("le", 8)
+            ...new BN(responderQuestionId).toArray("le", 8)
           )
         ),
         keys: [
