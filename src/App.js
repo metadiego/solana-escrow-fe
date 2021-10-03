@@ -117,67 +117,78 @@ function App() {
           <div className="initializer-inputs">
             <h1>Initialize Escrow:</h1>
             <div className="text-field">
-              <p>Private key of initializer (as byte array from sollet.io, without the '[]'):</p>
+              <p className="bold">Initializer Main Account Private Key (as byte array from sollet.io, without the '[]'):</p>
               <TextField id="outlined-basic" variant="outlined" value={initializerPrivateKey} onChange={(evt) => setInitializerPrivateKey(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p>Initializer Token Temp Account Public Key:</p>
+              <p className="bold">Initializer Temp Token Account Public Key:</p>
               <TextField id="outlined-basic" variant="outlined" value={initializerTempTokenAccountPubkey} onChange={(evt) => setInitializerTempTokenAccountPubkey(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p>Responder Public Key:</p>
+              <p className="bold">Responder Main Account Public Key:</p>
               <TextField id="outlined-basic" variant="outlined" value={initializerResponderPublicKey} onChange={(evt) => setInitializerResponderPublicKey(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p>Initializer Question ID:</p>
+              <p className="bold">Initializer Question ID:</p>
               <TextField id="outlined-basic" variant="outlined" value={initializerQuestionId} onChange={(evt) => setInitializerQuestionId(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p>Initializer Question Bid:</p>
+              <p className="bold">Initializer Question Bid:</p>
               <TextField id="outlined-basic" variant="outlined" value={initializerQuestionBid} onChange={(evt) => setInitializerQuestionBid(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p>Initializer Question Duration (seconds):</p>
+              <p className="bold">Initializer Question Duration (seconds):</p>
               <TextField id="outlined-basic" variant="outlined" value={initializerQuestionDurationSeconds} onChange={(evt) => setInitializerQuestionDurationSeconds(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p>Escrow Program ID:</p>
+              <p className="bold">Escrow Program ID:</p>
               <TextField id="outlined-basic" variant="outlined" value={initializerEscrowProgramId} onChange={(evt) => setInitializerEscrowProgramId(evt.target.value)}/>
             </div>
 
             <div className="button-container">
               <Button size="large"  variant="contained" onClick={() => handleInitEscrow()}>Init Escrow</Button>
-              <Button size="large"  variant="contained" color="error" onClick={() => handleInitializerReset()}>Reset Initializers Data</Button>
+              <Button size="large"  variant="contained" color="error" onClick={() => handleInitializerReset()}>Reset Data</Button>
             </div>
           </div>
           <div className="initializer-data">
             <div className="text-field">
-              <p>Escrow account:</p>
+              <p className="bold">Escrow account:</p>
               <p>{escrowAccountPubkey}</p>
             </div>
             <div className="text-field">
-              <p>Is initialized:</p>
+              <p className="bold">Escrow Is initialized:</p>
               <p>{escrowIsInitialized}</p>
             </div>
             <div className="text-field">
-              <p>Initializer account:</p>
-              <p>{escrowInitializerAccountPubkey}</p>
+              <p className="bold">Escrow X Token Temp Account:</p>
+              <p>PubKey: {escrowXTokenTempAccountPubkey}</p>
             </div>
             <div className="text-field">
-              <p>Escrow X Token Temp Account Public Key:</p>
-              <p>{escrowXTokenTempAccountPubkey}</p>
-            </div>
-            <div className="text-field">
-              <p>Escrow Question ID:</p>
+              <p className="bold">Escrow Question ID:</p>
               <p>{escrowQuestionId}</p>
             </div>
             <div className="text-field">
-              <p>Escrow Question Bid Ammount X Tokens:</p>
+              <p className="bold">Escrow Question Bid Ammount X Tokens:</p>
               <p>{escrowQuestionBidAmountXTokens}</p>
             </div>
             <div className="text-field">
-              <p>Escrow Question Duration:</p>
+              <p className="bold">Escrow Question Duration:</p>
               <p>{escrowQuestionDuration}</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Initializer Main Account:</p>
+              <p>Pub Key: {escrowInitializerAccountPubkey}</p>
+              <p>Funds: TODO</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Initializer Temp Token account:</p>
+              <p>Pub Key: {initializerTempTokenAccountPubkey}</p>
+              <p>Funds: TODO</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Responder Main Account:</p>
+              <p>Pub Key: TODO</p>
+              <p>Funds: TODO</p>
             </div>
           </div>
         </div>
@@ -185,23 +196,23 @@ function App() {
           <div className="responder-inputs">
             <h1>Respond:</h1>
             <div className="text-field">
-              <p>Responder's private key (as byte array from sollet.io, without the '[]')</p>
+              <p className="bold">Responder Main Account Private Key (as byte array from sollet.io, without the '[]')</p>
               <TextField id="outlined-basic" variant="outlined" value={responderPrivateKey} onChange={(evt) => setResponderPrivateKey(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p>Responder's token account pubkey:</p>
+              <p className="bold">Responder Receiving Token Account Public Key:</p>
               <TextField id="outlined-basic" variant="outlined" value={responderXTokenAccountPubkey} onChange={(evt) => setResponderXTokenAccountPubkey(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p>Responder's Question ID:</p>
+              <p className="bold">Responder Question ID:</p>
               <TextField id="outlined-basic" variant="outlined" value={responderQuestionId} onChange={(evt) => setResponderQuestionId(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p>Responder's Expected X Token Ammount:</p>
+              <p className="bold">Responder Expected Token Ammount:</p>
               <TextField id="outlined-basic" variant="outlined" value={responderExpectedXTokenAmount} onChange={(evt) => setResponderExpectedXTokenAmount(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p>Escrow Program ID:</p>
+              <p className="bold">Escrow Program ID:</p>
               <TextField id="outlined-basic" variant="outlined" value={responderEscrowProgramId} onChange={(evt) => setResponderEscrowProgramId(evt.target.value)}/>
             </div>
             <div className="button-container">
@@ -211,32 +222,24 @@ function App() {
           </div>
           <div className="responder-data">
             <div className="text-field">
-              <p>Escrow account:</p>
-              <p>{escrowAccountPubkey}</p>
+              <p className="bold">Initializer Main Account:</p>
+              <p>Pub Key: {escrowInitializerAccountPubkey}</p>
+              <p>Funds: TODO</p>
             </div>
             <div className="text-field">
-              <p>Is initialized:</p>
-              <p>{escrowIsInitialized}</p>
+              <p className="bold">Initializer Temp Token account:</p>
+              <p>Pub Key: {initializerTempTokenAccountPubkey}</p>
+              <p>Funds: TODO</p>
             </div>
             <div className="text-field">
-              <p>Initializer account:</p>
-              <p>{escrowInitializerAccountPubkey}</p>
+              <p className="bold">Responder Main Account:</p>
+              <p>Pub Key: TODO</p>
+              <p>Funds: TODO</p>
             </div>
             <div className="text-field">
-              <p>Escrow X Token Temp Account Public Key:</p>
-              <p>{escrowXTokenTempAccountPubkey}</p>
-            </div>
-            <div className="text-field">
-              <p>Escrow Question ID:</p>
-              <p>{escrowQuestionId}</p>
-            </div>
-            <div className="text-field">
-              <p>Escrow Question Bid Ammount X Tokens:</p>
-              <p>{escrowQuestionBidAmountXTokens}</p>
-            </div>
-            <div className="text-field">
-              <p>Escrow Question Duration:</p>
-              <p>{escrowQuestionDuration}</p>
+              <p className="bold">Responder Receiving Token Account:</p>
+              <p>Pub Key: {responderXTokenAccountPubkey}</p>
+              <p>Funds: TODO</p>
             </div>
           </div>
         </div>

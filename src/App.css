@@ -10,6 +10,10 @@
   margin: 0 10vw;
 }
 
+.bold {
+  font-weight: bold;
+}
+
 .text-field {
   display: flex;
   flex-direction: column;
@@ -23,6 +27,10 @@
   flex-direction: row;
   justify-content: flex-start;
   margin: 0 0 20px 0;
+}
+
+.initializer-container {
+  border-bottom: solid;
 }
 
 .initializer-data,
