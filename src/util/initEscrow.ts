@@ -50,6 +50,17 @@ export const initEscrow = async (
         programId: escrowProgramId
     });
 
+    const bufferData = Buffer.from(
+      Uint8Array.of(
+        0,
+        ...new BN(questionBidAmountXTokens).toArray("le", 8),
+        ...new BN(questionId).toArray("le", 8),
+        ...new BN(questionDuration).toArray("le", 8),
+      )
+    );
+    console.log("Buffer Data is:");
+    console.log(bufferData);
+
     /// Instruction: initialize escrow instruction.
     const initEscrowIx = new TransactionInstruction({
         programId: escrowProgramId,
@@ -61,14 +72,7 @@ export const initEscrow = async (
             { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false},
             { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
         ],
-        data: Buffer.from(
-          Uint8Array.of(
-            0,
-            ...new BN(questionBidAmountXTokens).toArray("le", 8),
-            ...new BN(questionId).toArray("le", 8),
-            ...new BN(questionDuration).toArray("le", 8),
-          )
-        )
+        data: bufferData
     })
 
     const tx = new Transaction()
