@@ -281,7 +281,6 @@ function App() {
               <p>Pub Key: {escrowXTokenTempAccountPubkey}</p>
               <p>Funds: {respondStepAccountInfo?.escrowTempTokenAccountBalance ?? '--'}</p>
             </div>
-            escrowTempTokenAccountBalance
           </div>
         </div>
       </div>
