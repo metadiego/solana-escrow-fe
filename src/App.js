@@ -97,7 +97,7 @@ function App() {
           noValidate
           autoComplete="off"
         >
-          <h1>Initializer Data</h1>
+          <h1>Initializer Data:</h1>
           <div className="text-field">
             <p>Public Key of initializer:</p>
             <TextField id="outlined-basic" variant="outlined" value={initializerPublicKey} onChange={(evt) => setInitializerPublicKey(evt.target.value)}/>
@@ -150,7 +150,7 @@ function App() {
           <div className="text-field">
             <p>Responders public key:</p>
             <TextField id="outlined-basic" variant="outlined" value={responderPublicKey} onChange={(evt) => setResponderPublicKey(evt.target.value)}/>
-          </div>`
+          </div>
           <div className="text-field">
             <p>Responders private key (as byte array from sollet.io, without the '[]')</p>
             <TextField id="outlined-basic" variant="outlined" value={responderPrivateKey} onChange={(evt) => setResponderPrivateKey(evt.target.value)}/>

@@ -18,14 +18,18 @@ export const ESCROW_ACCOUNT_DATA_LAYOUT = BufferLayout.struct([
   BufferLayout.u8("isInitialized"),
   publicKey("initializerPubkey"),
   publicKey("initializerTempTokenAccountPubkey"),
-  publicKey("initializerReceivingTokenAccountPubkey"),
-  uint64("expectedAmount"),
+  publicKey("responderTokenAccountPubkey"),
+  uint64("questionBidAmountXTokens"),
+  uint64("questionId"),
+  uint64("questionDuration")
 ]);
 
 export interface EscrowLayout {
   isInitialized: number,
   initializerPubkey: Uint8Array,
-  initializerReceivingTokenAccountPubkey: Uint8Array,
   initializerTempTokenAccountPubkey: Uint8Array,
-  expectedAmount: Uint8Array
+  responderTokenAccountPubkey: Uint8Array,
+  questionBidAmountXTokens: Uint8Array,
+  questionId: Uint8Array,
+  questionDuration: Uint8Array
 }

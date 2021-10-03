@@ -8,15 +8,14 @@ const connection = new Connection("http://localhost:8899", 'singleGossip');
 export const respond = async (
     privateKeyByteArray: string,
     escrowAccountAddressString: string,
-    takerXTokenAccountAddressString: string,
-    takerYTokenAccountAddressString: string,
-    takerExpectedXTokenAmount: number,
+    responderXTokenAccountAddressString: string,
+    responderExpectedXTokenAmount: number,
     programIdString: string,
+    questionId: number
 ) => {
-    const takerAccount = new Account(privateKeyByteArray.split(',').map(s => parseInt(s)));
+    const responderAccount = new Account(privateKeyByteArray.split(',').map(s => parseInt(s)));
     const escrowAccountPubkey = new PublicKey(escrowAccountAddressString);
-    const takerXTokenAccountPubkey = new PublicKey(takerXTokenAccountAddressString);
-    const takerYTokenAccountPubkey = new PublicKey(takerYTokenAccountAddressString);
+    const responderXTokenAccountPubkey = new PublicKey(responderXTokenAccountAddressString);
     const programId = new PublicKey(programIdString);
 
     let encodedEscrowState;
@@ -31,27 +30,31 @@ export const respond = async (
         isInitialized: !!decodedEscrowLayout.isInitialized,
         initializerAccountPubkey: new PublicKey(decodedEscrowLayout.initializerPubkey),
         XTokenTempAccountPubkey: new PublicKey(decodedEscrowLayout.initializerTempTokenAccountPubkey),
-        initializerYTokenAccount: new PublicKey(decodedEscrowLayout.initializerReceivingTokenAccountPubkey),
-        expectedAmount: new BN(decodedEscrowLayout.expectedAmount, 10, "le")
+        questionBidAmount: new BN(decodedEscrowLayout.questionBidAmountXTokens, 8, "le")
     };
 
     const PDA = await PublicKey.findProgramAddress([Buffer.from("escrow")], programId);
 
-    const exchangeInstruction = new TransactionInstruction({
+    const respondInstruction = new TransactionInstruction({
         programId,
-        data: Buffer.from(Uint8Array.of(1, ...new BN(takerExpectedXTokenAmount).toArray("le", 8))),
+        data: Buffer.from(
+          Uint8Array.of(
+            1,
+            ...new BN(responderExpectedXTokenAmount).toArray("le", 8),
+            ...new BN(questionId).toArray("le", 8)
+          )
+        ),
         keys: [
-            { pubkey: takerAccount.publicKey, isSigner: true, isWritable: false },
-            { pubkey: takerYTokenAccountPubkey, isSigner: false, isWritable: true },
-            { pubkey: takerXTokenAccountPubkey, isSigner: false, isWritable: true },
+            { pubkey: responderAccount.publicKey, isSigner: true, isWritable: false },
+            { pubkey: responderXTokenAccountPubkey, isSigner: false, isWritable: true },
             { pubkey: escrowState.XTokenTempAccountPubkey, isSigner: false, isWritable: true},
             { pubkey: escrowState.initializerAccountPubkey, isSigner: false, isWritable: true},
-            { pubkey: escrowState.initializerYTokenAccount, isSigner: false, isWritable: true},
             { pubkey: escrowAccountPubkey, isSigner: false, isWritable: true },
             { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false},
             { pubkey: PDA[0], isSigner: false, isWritable: false}
         ]
     })
 
-    await connection.sendTransaction(new Transaction().add(exchangeInstruction), [takerAccount], {skipPreflight: false, preflightCommitment: 'singleGossip'});
+    await connection.sendTransaction(
+      new Transaction().add(respondInstruction), [responderAccount], {skipPreflight: false, preflightCommitment: 'singleGossip'});
 }
