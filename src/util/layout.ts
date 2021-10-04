@@ -17,7 +17,7 @@ const uint64 = (property = "uint64") => {
 export const ESCROW_ACCOUNT_DATA_LAYOUT = BufferLayout.struct([
   BufferLayout.u8("isInitialized"),
   publicKey("initializerPubkey"),
-  publicKey("initializerTempTokenAccountPubkey"),
+  publicKey("tempTokenAccountPubkey"),
   publicKey("responderTokenAccountPubkey"),
   uint64("questionBidAmountXTokens"),
   uint64("questionId"),
@@ -27,7 +27,7 @@ export const ESCROW_ACCOUNT_DATA_LAYOUT = BufferLayout.struct([
 export interface EscrowLayout {
   isInitialized: number,
   initializerPubkey: Uint8Array,
-  initializerTempTokenAccountPubkey: Uint8Array,
+  tempTokenAccountPubkey: Uint8Array,
   responderTokenAccountPubkey: Uint8Array,
   questionBidAmountXTokens: Uint8Array,
   questionId: Uint8Array,

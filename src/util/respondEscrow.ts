@@ -3,9 +3,8 @@ import { Account, Connection, PublicKey, Transaction, TransactionInstruction } f
 import BN from "bn.js";
 import { ESCROW_ACCOUNT_DATA_LAYOUT, EscrowLayout } from "./layout";
 
-const connection = new Connection("http://localhost:8899", 'singleGossip');
-
 export const respond = async (
+    connection: Connection,
     privateKeyByteArray: string,
     responderXTokenAccountAddressString: string,
     responderExpectedXTokenAmount: number,
@@ -29,9 +28,11 @@ export const respond = async (
         escrowAccountPubkey: escrowAccountPubkey,
         isInitialized: !!decodedEscrowLayout.isInitialized,
         initializerAccountPubkey: new PublicKey(decodedEscrowLayout.initializerPubkey),
-        XTokenTempAccountPubkey: new PublicKey(decodedEscrowLayout.initializerTempTokenAccountPubkey),
+        tempTokenAccountPubkey: new PublicKey(decodedEscrowLayout.tempTokenAccountPubkey),
         questionBidAmount: new BN(decodedEscrowLayout.questionBidAmountXTokens, 8, "le")
     };
+    console.log("Escrow state successfuly fetched:");
+    console.log(escrowState);
 
     const PDA = await PublicKey.findProgramAddress([Buffer.from("escrow")], escrowProgramId);
 
@@ -47,7 +48,7 @@ export const respond = async (
         keys: [
             { pubkey: responderAccount.publicKey, isSigner: true, isWritable: false },
             { pubkey: responderXTokenAccountPubkey, isSigner: false, isWritable: true },
-            { pubkey: escrowState.XTokenTempAccountPubkey, isSigner: false, isWritable: true},
+            { pubkey: escrowState.tempTokenAccountPubkey, isSigner: false, isWritable: true},
             { pubkey: escrowState.initializerAccountPubkey, isSigner: false, isWritable: true},
             { pubkey: escrowAccountPubkey, isSigner: false, isWritable: true },
             { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false},

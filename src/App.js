@@ -1,13 +1,25 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import * as escrowinit from './util/initEscrow';
 import * as escrowRespond from './util/respondEscrow';
-import {getAccountInfo, getTokenAccountInfo} from './util/getAccountInfo';
+import {buildLocalConnection, buildDevConnection, getInfoForAccount, getInfoForTokenAccount} from './util/getAccountInfo';
 
 import './App.css';
 
 function App() {
+  let [connection, setConnection] = useState(undefined);
+
+  useEffect(() => {
+    if (!connection) {
+      try {
+        setConnection(buildDevConnection());
+        console.log("Established connection to Solana BE.");
+      } catch (error) {
+        console.log("Could not establish connection to Solana BE.")
+      }
+    }
+  }, [connection]);
 
   // Initializer inputs
   let [initializerPrivateKey, setInitializerPrivateKey] = useState('');
@@ -26,31 +38,24 @@ function App() {
 
   // Receiver inputs
   let [responderPrivateKey, setResponderPrivateKey] = useState('');
-  let [responderXTokenAccountPubkey, setResponderXTokenAccountPubkey] = useState('');
+  let [responderTokenAccountPubkey, setResponderTokenAccountPubkey] = useState('');
   let [responderEscrowProgramId, setResponderEscrowProgramId] = useState('');
   let [responderQuestionId, setResponderQuestionId] = useState(0);
-  let [responderExpectedXTokenAmount, setResponderExpectedXTokenAmount] = useState(0);
+  let [responderExpectedTokenAmount, setResponderExpectedTokenAmount] = useState(0);
 
   // Escrow State
   let [escrowAccountPubkey, setEscrowAccountPubkey] = useState('--');
-  let [escrowIsInitialized, setEscrowIsInitialized] = useState('--');
+  let [escrowIsInitialized, setEscrowIsInitialized] = useState('FALSE');
   let [escrowInitializerAccountPubkey, setEscrowInitializerAccountPubkey] = useState('--');
-  let [escrowXTokenTempAccountPubkey, setEscrowXTokenTempAccountPubkey] = useState('--');
+  let [escrowTempTokenAccountPubkey, setEscrowTempTokenAccountPubkey] = useState('--');
   let [escrowQuestionId, setEscrowQuestionId] = useState('--');
-  let [escrowQuestionBidAmountXTokens, setEscrowQuestionBidAmountXTokens] = useState('--');
+  let [escrowQuestionBidAmountTokens, setEscrowQuestionBidAmountTokens] = useState('--');
   let [escrowQuestionDuration, setEscrowQuestionDuration] = useState('--');
 
   const handleInitEscrow = async () => {
     try {
-      const {
-        escrowAccountPubkey,
-        escrowIsInitialized,
-        escrowInitializerAccountPubkey,
-        escrowXTokenTempAccountPubkey,
-        escrowQuestionId,
-        escrowQuestionBidAmountXTokens,
-        escrowQuestionDuration,
-      } = await escrowinit.initEscrow(
+      const result = await escrowinit.initEscrow(
+        connection,
         initializerPrivateKey,
         initializerTempTokenAccountPubkey,
         initializerResponderPublicKey,
@@ -59,25 +64,25 @@ function App() {
         initializerQuestionBid,
         initializerQuestionDurationSeconds,
       );
-      setEscrowAccountPubkey(escrowAccountPubkey);
-      setEscrowIsInitialized(escrowIsInitialized);
-      setEscrowInitializerAccountPubkey(escrowInitializerAccountPubkey);
-      setEscrowXTokenTempAccountPubkey(escrowXTokenTempAccountPubkey);
-      setEscrowQuestionId(escrowQuestionId);
-      setEscrowQuestionBidAmountXTokens(escrowQuestionBidAmountXTokens);
-      setEscrowQuestionDuration(escrowQuestionDuration);
+      setEscrowAccountPubkey(result.escrowAccountPubkey.toString());
+      setEscrowIsInitialized(result.isInitialized ? 'TRUE' : 'FALSE');
+      setEscrowInitializerAccountPubkey(result.initializerAccountPubkey.toString());
+      setEscrowTempTokenAccountPubkey(result.tempTokenAccountPubkey.toString());
+      setEscrowQuestionId(result.questionId);
+      setEscrowQuestionBidAmountTokens(result.questionBidAmountXTokens);
+      setEscrowQuestionDuration(result.questionDuration);
 
-      const initializerMainAccountInfo = await getAccountInfo(escrowInitializerAccountPubkey);
-      const initializerTokenAccountInfo = await getTokenAccountInfo(initializerTempTokenAccountPubkey);
-      const responderMainAccountInfo = await getAccountInfo(initializerResponderPublicKey);
-      const escrowTempTokenAccountInfo = await getTokenAccountInfo(escrowXTokenTempAccountPubkey);
+      const initializerMainAccountInfo = await getInfoForAccount(connection, result.initializerAccountPubkey.toString());
+      const initializerTokenAccountInfo = await getInfoForTokenAccount(connection, initializerTempTokenAccountPubkey);
+      const responderMainAccountInfo = await getInfoForAccount(connection, initializerResponderPublicKey);
+      const escrowTempTokenAccountInfo = await getInfoForTokenAccount(connection, result.tempTokenAccountPubkey.toString());
 
       setInitializationStepAccountInfo({
         initializerMainAccountLamports: initializerMainAccountInfo.lamports,
-        initializerTokenAccountBalance: initializerTokenAccountInfo.amount,
-        responderMainAccountBalance: responderMainAccountInfo.lamports,
-        escrowTempTokenAccountBalance: escrowTempTokenAccountInfo.amount});
-
+        responderMainAccountLamports: responderMainAccountInfo.lamports,
+        initializerTokenAccountBalance: initializerTokenAccountInfo.value.amount.toString(),
+        escrowTempTokenAccountBalance: escrowTempTokenAccountInfo.value.amount.toString()
+      });
     } catch (err) {
       alert(`Failed to initialize escrow: ${err.message}`);
     }
@@ -95,9 +100,9 @@ function App() {
     setEscrowAccountPubkey('');
     setEscrowIsInitialized('');
     setEscrowInitializerAccountPubkey('');
-    setEscrowXTokenTempAccountPubkey('');
+    setEscrowTempTokenAccountPubkey('');
     setEscrowQuestionId(0);
-    setEscrowQuestionBidAmountXTokens(0);
+    setEscrowQuestionBidAmountTokens(0);
     setEscrowQuestionDuration(0);
 
   }
@@ -105,26 +110,27 @@ function App() {
   const handleRespond = async () => {
     try {
       await escrowRespond.respond(
+        connection,
         responderPrivateKey,
-        responderXTokenAccountPubkey,
-        responderExpectedXTokenAmount,
+        responderTokenAccountPubkey,
+        responderExpectedTokenAmount,
         responderQuestionId,
         escrowAccountPubkey,
         responderEscrowProgramId,
       );
 
-      const initializerMainAccountInfo = await getAccountInfo(escrowInitializerAccountPubkey);
-      const initializerTokenAccountInfo = await getTokenAccountInfo(initializerTempTokenAccountPubkey);
-      const responderMainAccountInfo = await getAccountInfo(initializerResponderPublicKey);
-      const responderTokenAccountInfo = await getTokenAccountInfo(responderXTokenAccountPubkey);
-      const escrowTempTokenAccountInfo = await getTokenAccountInfo(escrowXTokenTempAccountPubkey);
+      const initializerMainAccountInfo = await getInfoForAccount(connection, escrowInitializerAccountPubkey);
+      const initializerTokenAccountInfo = await getInfoForTokenAccount(connection, initializerTempTokenAccountPubkey);
+      const responderMainAccountInfo = await getInfoForAccount(connection, initializerResponderPublicKey);
+      const responderTokenAccountInfo = await getInfoForTokenAccount(connection, responderTokenAccountPubkey);
+      const escrowTempTokenAccountInfo = await getInfoForTokenAccount(connection, escrowTempTokenAccountPubkey);
 
       setRespondStepAccountInfo({
         initializerMainAccountLamports: initializerMainAccountInfo.lamports,
-        initializerTokenAccountBalance: initializerTokenAccountInfo.amount,
-        responderMainAccountBalance: responderMainAccountInfo.lamports,
-        responderTokenAccountBalance: responderTokenAccountInfo.amount,
-        escrowTempTokenAccountBalance: escrowTempTokenAccountInfo.amount});
+        initializerTokenAccountBalance: initializerTokenAccountInfo.value.amount.toString(),
+        responderMainAccountLamports: responderMainAccountInfo.lamports,
+        responderTokenAccountBalance: responderTokenAccountInfo.value.amount.toString(),
+        escrowTempTokenAccountBalance: escrowTempTokenAccountInfo.value.amount.toString()});
 
       alert("Success! Responder has successfuly transacted with escrow.");
     } catch (err) {
@@ -134,10 +140,10 @@ function App() {
 
   const handleResponderReset = () => {
     setResponderPrivateKey('');
-    setResponderXTokenAccountPubkey('');
+    setResponderTokenAccountPubkey('');
     setResponderEscrowProgramId('');
     setResponderQuestionId(0);
-    setResponderExpectedXTokenAmount(0);
+    setResponderExpectedTokenAmount(0);
   }
 
   return (
@@ -195,7 +201,7 @@ function App() {
             </div>
             <div className="text-field">
               <p className="bold">Escrow X Token Temp Account:</p>
-              <p>PubKey: {escrowXTokenTempAccountPubkey}</p>
+              <p>PubKey: {escrowTempTokenAccountPubkey}</p>
               <p>Balance: {initializationStepAccountInfo?.escrowTempTokenAccountBalance ?? '--'}</p>
             </div>
             <div className="text-field">
@@ -204,7 +210,7 @@ function App() {
             </div>
             <div className="text-field">
               <p className="bold">Escrow Question Bid Ammount X Tokens:</p>
-              <p>{escrowQuestionBidAmountXTokens}</p>
+              <p>{escrowQuestionBidAmountTokens}</p>
             </div>
             <div className="text-field">
               <p className="bold">Escrow Question Duration:</p>
@@ -223,7 +229,7 @@ function App() {
             <div className="text-field">
               <p className="bold">Responder Main Account:</p>
               <p>Pub Key: {initializerResponderPublicKey ?? '--'}</p>
-              <p>Funds (Lamports): {initializationStepAccountInfo?.responderMainAccountBalance ?? '--'} </p>
+              <p>Funds (Lamports): {initializationStepAccountInfo?.responderMainAccountLamports ?? '--'} </p>
             </div>
           </div>
         </div>
@@ -236,7 +242,7 @@ function App() {
             </div>
             <div className="text-field">
               <p className="bold">Responder Receiving Token Account Public Key:</p>
-              <TextField variant="outlined" value={responderXTokenAccountPubkey} onChange={(evt) => setResponderXTokenAccountPubkey(evt.target.value)}/>
+              <TextField variant="outlined" value={responderTokenAccountPubkey} onChange={(evt) => setResponderTokenAccountPubkey(evt.target.value)}/>
             </div>
             <div className="text-field">
               <p className="bold">Responder Question ID:</p>
@@ -244,7 +250,7 @@ function App() {
             </div>
             <div className="text-field">
               <p className="bold">Responder Expected Token Ammount:</p>
-              <TextField variant="outlined" value={responderExpectedXTokenAmount} onChange={(evt) => setResponderExpectedXTokenAmount(evt.target.value)}/>
+              <TextField variant="outlined" value={responderExpectedTokenAmount} onChange={(evt) => setResponderExpectedTokenAmount(evt.target.value)}/>
             </div>
             <div className="text-field">
               <p className="bold">Escrow Program ID:</p>
@@ -269,16 +275,16 @@ function App() {
             <div className="text-field">
               <p className="bold">Responder Main Account:</p>
               <p>Pub Key: {initializerResponderPublicKey ?? '--'}</p>
-              <p>Funds: {respondStepAccountInfo?.responderMainAccountBalance ?? '--'}</p>
+              <p>Funds: {respondStepAccountInfo?.responderMainAccountLamports ?? '--'}</p>
             </div>
             <div className="text-field">
               <p className="bold">Responder Receiving Token Account:</p>
-              <p>Pub Key: {responderXTokenAccountPubkey ?? '--'}</p>
+              <p>Pub Key: {responderTokenAccountPubkey ?? '--'}</p>
               <p>Funds: {respondStepAccountInfo?.responderTokenAccountBalance ?? '--'}</p>
             </div>
             <div className="text-field">
               <p className="bold">Escrow Temp Token Account:</p>
-              <p>Pub Key: {escrowXTokenTempAccountPubkey}</p>
+              <p>Pub Key: {escrowTempTokenAccountPubkey}</p>
               <p>Funds: {respondStepAccountInfo?.escrowTempTokenAccountBalance ?? '--'}</p>
             </div>
           </div>

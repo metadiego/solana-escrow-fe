@@ -3,9 +3,8 @@ import { Account, Connection, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Tran
 import BN from "bn.js";
 import { ESCROW_ACCOUNT_DATA_LAYOUT, EscrowLayout } from "./layout";
 
-const connection = new Connection("http://localhost:8899", 'singleGossip');
-
 export const initEscrow = async (
+    connection: Connection,
     privateKeyByteArray: string,
     initializerXTokenAccountPubkeyString: string,
     responderAccountPubKeyString: string,
@@ -83,11 +82,12 @@ export const initEscrow = async (
 
     const encodedEscrowState = (await connection.getAccountInfo(escrowAccount.publicKey, 'singleGossip'))!.data;
     const decodedEscrowState = ESCROW_ACCOUNT_DATA_LAYOUT.decode(encodedEscrowState) as EscrowLayout;
+
     return {
-        escrowAccountPubkey: escrowAccount.publicKey.toBase58(),
+        escrowAccountPubkey: escrowAccount.publicKey,
         isInitialized: !!decodedEscrowState.isInitialized,
-        initializerAccountPubkey: new PublicKey(decodedEscrowState.initializerPubkey).toBase58(),
-        XTokenTempAccountPubkey: new PublicKey(decodedEscrowState.initializerTempTokenAccountPubkey).toBase58(),
+        initializerAccountPubkey: new PublicKey(decodedEscrowState.initializerPubkey),
+        tempTokenAccountPubkey: new PublicKey(decodedEscrowState.tempTokenAccountPubkey),
         questionId: new BN(decodedEscrowState.questionId, 8, "le").toNumber(),
         questionBidAmountXTokens: new BN(decodedEscrowState.questionBidAmountXTokens, 8, "le").toNumber(),
         questionDuration: new BN(decodedEscrowState.questionDuration, 8, "le").toNumber()
