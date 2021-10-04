@@ -42,7 +42,8 @@ export const respond = async (
           Uint8Array.of(
             1,
             ...new BN(responderExpectedXTokenAmount).toArray("le", 8),
-            ...new BN(responderQuestionId).toArray("le", 8)
+            ...new BN(responderQuestionId).toArray("le", 8),
+            ...new BN(0).toArray("le", 8)
           )
         ),
         keys: [
