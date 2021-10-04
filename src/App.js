@@ -24,7 +24,7 @@ function App() {
   // Initializer inputs
   let [initializerPrivateKey, setInitializerPrivateKey] = useState('');
   let [initializerTempTokenAccountPubkey, setInitializerTempTokenAccountPubkey] = useState('');
-  let [initializerResponderPublicKey, setInitializerResponderPublicKey] = useState('');
+  let [initializerResponderTokenAcctPublicKey, setInitializerResponderTokenAcctPublicKey] = useState('');
   let [initializerQuestionId, setInitializerQuestionId] = useState(0);
   let [initializerQuestionBid, setInitializerQuestionBid] = useState(0);
   let [initializerQuestionDurationSeconds, setInitializerQuestionDurationSeconds] = useState(0);
@@ -58,7 +58,7 @@ function App() {
         connection,
         initializerPrivateKey,
         initializerTempTokenAccountPubkey,
-        initializerResponderPublicKey,
+        initializerResponderTokenAcctPublicKey,
         initializerEscrowProgramId,
         initializerQuestionId,
         initializerQuestionBid,
@@ -74,12 +74,12 @@ function App() {
 
       const initializerMainAccountInfo = await getInfoForAccount(connection, result.initializerAccountPubkey.toString());
       const initializerTokenAccountInfo = await getInfoForTokenAccount(connection, initializerTempTokenAccountPubkey);
-      const responderMainAccountInfo = await getInfoForAccount(connection, initializerResponderPublicKey);
+      const responderTokenAccountInfo = await getInfoForTokenAccount(connection, initializerResponderTokenAcctPublicKey.toString());
       const escrowTempTokenAccountInfo = await getInfoForTokenAccount(connection, result.tempTokenAccountPubkey.toString());
 
       setInitializationStepAccountInfo({
         initializerMainAccountLamports: initializerMainAccountInfo.lamports,
-        responderMainAccountLamports: responderMainAccountInfo.lamports,
+        responderTokenAccountBalance: responderTokenAccountInfo.value.amount.toString(),
         initializerTokenAccountBalance: initializerTokenAccountInfo.value.amount.toString(),
         escrowTempTokenAccountBalance: escrowTempTokenAccountInfo.value.amount.toString()
       });
@@ -91,7 +91,7 @@ function App() {
   const handleInitializerReset = () => {
     setInitializerPrivateKey('');
     setInitializerTempTokenAccountPubkey('');
-    setInitializerResponderPublicKey('');
+    setInitializerResponderTokenAcctPublicKey('');
     setInitializerEscrowProgramId('');
     setInitializerQuestionId(0);
     setInitializerQuestionBid(0);
@@ -121,16 +121,13 @@ function App() {
 
       const initializerMainAccountInfo = await getInfoForAccount(connection, escrowInitializerAccountPubkey);
       const initializerTokenAccountInfo = await getInfoForTokenAccount(connection, initializerTempTokenAccountPubkey);
-      const responderMainAccountInfo = await getInfoForAccount(connection, initializerResponderPublicKey);
       const responderTokenAccountInfo = await getInfoForTokenAccount(connection, responderTokenAccountPubkey);
-      const escrowTempTokenAccountInfo = await getInfoForTokenAccount(connection, escrowTempTokenAccountPubkey);
+      // const escrowTempTokenAccountInfo = await getInfoForTokenAccount(connection, escrowTempTokenAccountPubkey);
 
       setRespondStepAccountInfo({
         initializerMainAccountLamports: initializerMainAccountInfo.lamports,
         initializerTokenAccountBalance: initializerTokenAccountInfo.value.amount.toString(),
-        responderMainAccountLamports: responderMainAccountInfo.lamports,
-        responderTokenAccountBalance: responderTokenAccountInfo.value.amount.toString(),
-        escrowTempTokenAccountBalance: escrowTempTokenAccountInfo.value.amount.toString()});
+        responderTokenAccountBalance: responderTokenAccountInfo.value.amount.toString()});
 
       alert("Success! Responder has successfuly transacted with escrow.");
     } catch (err) {
@@ -165,8 +162,8 @@ function App() {
               <TextField variant="outlined" value={initializerTempTokenAccountPubkey} onChange={(evt) => setInitializerTempTokenAccountPubkey(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p className="bold">Responder Main Account Public Key:</p>
-              <TextField variant="outlined" value={initializerResponderPublicKey} onChange={(evt) => setInitializerResponderPublicKey(evt.target.value)}/>
+              <p className="bold">Responder Token Account Public Key:</p>
+              <TextField variant="outlined" value={initializerResponderTokenAcctPublicKey} onChange={(evt) => setInitializerResponderTokenAcctPublicKey(evt.target.value)}/>
             </div>
             <div className="text-field">
               <p className="bold">Initializer Question ID:</p>
@@ -228,8 +225,8 @@ function App() {
             </div>
             <div className="text-field">
               <p className="bold">Responder Main Account:</p>
-              <p>Pub Key: {initializerResponderPublicKey ?? '--'}</p>
-              <p>Funds (Lamports): {initializationStepAccountInfo?.responderMainAccountLamports ?? '--'} </p>
+              <p>Pub Key: {initializerResponderTokenAcctPublicKey ?? '--'}</p>
+              <p>Funds (Lamports): {initializationStepAccountInfo?.responderTokenAccountBalance ?? '--'} </p>
             </div>
           </div>
         </div>
@@ -271,11 +268,6 @@ function App() {
               <p className="bold">Initializer Temp Token account:</p>
               <p>Pub Key: {initializerTempTokenAccountPubkey ?? '--'}</p>
               <p>Funds: {respondStepAccountInfo?.initializerTokenAccountBalance ?? '--'}</p>
-            </div>
-            <div className="text-field">
-              <p className="bold">Responder Main Account:</p>
-              <p>Pub Key: {initializerResponderPublicKey ?? '--'}</p>
-              <p>Funds: {respondStepAccountInfo?.responderMainAccountLamports ?? '--'}</p>
             </div>
             <div className="text-field">
               <p className="bold">Responder Receiving Token Account:</p>
