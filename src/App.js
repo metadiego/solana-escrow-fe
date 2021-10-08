@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import * as escrowinit from './util/initEscrow';
 import * as escrowRespond from './util/respondEscrow';
+import * as escrowCancel from './util/cancelEscrow';
 import {buildLocalConnection, buildDevConnection, getInfoForAccount, getInfoForTokenAccount} from './util/getAccountInfo';
 
 import './App.css';
@@ -33,8 +34,11 @@ function App() {
   // Initialization Step Account info
   let [initializationStepAccountInfo, setInitializationStepAccountInfo] = useState({});
 
-  // Respond Step Account getAccountInfo
+  // Respond Step Account Account Info
   let [respondStepAccountInfo, setRespondStepAccountInfo] = useState({});
+
+  // Cancel Step Account Account Info
+  let [cancelStepAccountInfo, setCancelStepAccountInfo] = useState({});
 
   // Receiver inputs
   let [responderPrivateKey, setResponderPrivateKey] = useState('');
@@ -143,6 +147,19 @@ function App() {
     setResponderExpectedTokenAmount(0);
   }
 
+  const handleCancel = () => {
+    escrowCancel.cancelEscrow(
+      connection,
+      initializerPrivateKey,
+      initializerTempTokenAccountPubkey,
+      escrowTempTokenAccountPubkey,
+      escrowAccountPubkey,
+      initializerEscrowProgramId,
+      initializerQuestionId,
+      initializerQuestionBid
+    )
+  }
+
   return (
     <div className="app">
       <h1>Escrow FE</h1>
@@ -158,7 +175,7 @@ function App() {
               <TextField variant="outlined" value={initializerPrivateKey} onChange={(evt) => setInitializerPrivateKey(evt.target.value)}/>
             </div>
             <div className="text-field">
-              <p className="bold">Initializer Temp Token Account Public Key:</p>
+              <p className="bold">Initializer Token Account Public Key:</p>
               <TextField variant="outlined" value={initializerTempTokenAccountPubkey} onChange={(evt) => setInitializerTempTokenAccountPubkey(evt.target.value)}/>
             </div>
             <div className="text-field">
@@ -189,7 +206,7 @@ function App() {
           </div>
           <div className="initializer-data">
             <div className="text-field">
-              <p className="bold">Escrow account:</p>
+              <p className="bold">Escrow Account Public Key:</p>
               <p>{escrowAccountPubkey}</p>
             </div>
             <div className="text-field">
@@ -219,12 +236,12 @@ function App() {
               <p>Funds (Lamports): {initializationStepAccountInfo?.initializerMainAccountLamports ?? '--'}</p>
             </div>
             <div className="text-field">
-              <p className="bold">Initializer Temp Token account:</p>
+              <p className="bold">Initializer Token account:</p>
               <p>Pub Key: {initializerTempTokenAccountPubkey ?? '--'}</p>
               <p>Funds (X Token): {initializationStepAccountInfo?.initializerTokenAccountBalance ?? '--'}</p>
             </div>
             <div className="text-field">
-              <p className="bold">Responder Main Account:</p>
+              <p className="bold">Responder Token Account:</p>
               <p>Pub Key: {initializerResponderTokenAcctPublicKey ?? '--'}</p>
               <p>Funds (Lamports): {initializationStepAccountInfo?.responderTokenAccountBalance ?? '--'} </p>
             </div>
@@ -278,6 +295,41 @@ function App() {
               <p className="bold">Escrow Temp Token Account:</p>
               <p>Pub Key: {escrowTempTokenAccountPubkey}</p>
               <p>Funds: {respondStepAccountInfo?.escrowTempTokenAccountBalance ?? '--'}</p>
+            </div>
+          </div>
+        </div>
+        <div className="cancel-container">
+          <div className="cancel-inputs">
+            <h1>Cancel:</h1>
+            <div className="text-field">
+              <p className="bold">Initializer Main Account Private Key (as byte array from sollet.io, without the '[]'):</p>
+              <p> {initializerPrivateKey}</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Initializer Token Account Public Key:</p>
+              <p> {initializerTempTokenAccountPubkey}</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Escrow (PDA) Temp Token Account Public Key:</p>
+              <p>{escrowTempTokenAccountPubkey}</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Escrow Account Public Key:</p>
+              <p> {escrowAccountPubkey}</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Escrow Program ID Public Key:</p>
+              <p> {initializerEscrowProgramId}</p>
+            </div>
+            <div className="button-container">
+              <Button size="large" variant="contained" onClick={() => handleCancel()}>Cancel</Button>
+            </div>
+          </div>
+          <div className="cancel-data">
+            <div className="text-field">
+              <p className="bold">Initializer Token Account:</p>
+              <p>Pub Key: {initializerTempTokenAccountPubkey ?? '--'}</p>
+              <p>Funds: {cancelStepAccountInfo?.initializerTokenAccountBalance ?? '--'}</p>
             </div>
           </div>
         </div>

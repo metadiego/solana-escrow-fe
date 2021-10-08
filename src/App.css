@@ -22,19 +22,23 @@
 }
 
 .initializer-container,
-.responder-container {
+.responder-container,
+.cancel-container {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   margin: 0 0 20px 0;
 }
 
-.initializer-container {
+.initializer-container,
+.responder-container {
+  padding-bottom: 40px;
   border-bottom: solid;
 }
 
 .initializer-data,
-.responder-data {
+.responder-data,
+.cancel-data {
   display: inline-block;
   margin-left: 15vw;
 }
