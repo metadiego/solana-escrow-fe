@@ -1,5 +1,5 @@
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { Account, Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
+import { Account, Connection, PublicKey, Transaction, TransactionInstruction, SYSVAR_CLOCK_PUBKEY } from "@solana/web3.js";
 import BN from "bn.js";
 import { ESCROW_ACCOUNT_DATA_LAYOUT, EscrowLayout } from "./layout";
 
@@ -29,7 +29,8 @@ export const respond = async (
         isInitialized: !!decodedEscrowLayout.isInitialized,
         initializerAccountPubkey: new PublicKey(decodedEscrowLayout.initializerPubkey),
         tempTokenAccountPubkey: new PublicKey(decodedEscrowLayout.tempTokenAccountPubkey),
-        questionBidAmount: new BN(decodedEscrowLayout.questionBidAmountXTokens, 8, "le")
+        questionBidAmount: new BN(decodedEscrowLayout.questionBidAmountXTokens, 8, "le"),
+        escrowInitTime: new BN(decodedEscrowLayout.escrowInitTimeStamp, 8, "le"),
     };
     console.log("Escrow state successfuly fetched:");
     console.log(escrowState);
@@ -44,7 +45,11 @@ export const respond = async (
             ...new BN(responderExpectedXTokenAmount).toArray("le", 8),
             ...new BN(responderQuestionId).toArray("le", 8),
             ...new BN(0).toArray("le", 8),
+<<<<<<< HEAD
             ...new BN(0).toArray("le", 8)
+=======
+            ...new BN(0).toArray("le", 8),
+>>>>>>> f434e12133ae279733f25466be59083cfc01b435
           )
         ),
         keys: [
@@ -54,7 +59,8 @@ export const respond = async (
             { pubkey: escrowState.initializerAccountPubkey, isSigner: false, isWritable: true},
             { pubkey: escrowAccountPubkey, isSigner: false, isWritable: true },
             { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false},
-            { pubkey: PDA[0], isSigner: false, isWritable: false}
+            { pubkey: PDA[0], isSigner: false, isWritable: false},
+            { pubkey: SYSVAR_CLOCK_PUBKEY, isSigner: false, isWritable: false },
         ]
     })
 

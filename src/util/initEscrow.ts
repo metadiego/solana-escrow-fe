@@ -1,7 +1,8 @@
 import { AccountLayout, Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { Account, Connection, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Transaction, TransactionInstruction } from "@solana/web3.js";
+import { Account, Connection, PublicKey, SystemProgram, SYSVAR_CLOCK_PUBKEY, SYSVAR_RENT_PUBKEY, Transaction, TransactionInstruction } from "@solana/web3.js";
 import BN from "bn.js";
 import { ESCROW_ACCOUNT_DATA_LAYOUT, EscrowLayout } from "./layout";
+import { getInfoForAccount} from './getAccountInfo';
 
 export const initEscrow = async (
     connection: Connection,
@@ -16,6 +17,7 @@ export const initEscrow = async (
     /// Instruction: to create a temp token account for token X owned by token program.
     const privateKeyDecoded = privateKeyByteArray.split(',').map(s => parseInt(s));
     const initializerAccount = new Account(privateKeyDecoded);
+    const sysvarClockAccount = await getInfoForAccount(connection, SYSVAR_CLOCK_PUBKEY.toString());
 
     const tempTokenAccount = new Account();
     const createTempTokenAccountIx = SystemProgram.createAccount({
@@ -71,6 +73,7 @@ export const initEscrow = async (
             { pubkey: escrowAccount.publicKey, isSigner: false, isWritable: true },
             { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false},
             { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+            { pubkey: SYSVAR_CLOCK_PUBKEY, isSigner: false, isWritable: false },
         ],
         data: bufferData
     });
@@ -91,6 +94,7 @@ export const initEscrow = async (
         tempTokenAccountPubkey: new PublicKey(decodedEscrowState.tempTokenAccountPubkey),
         questionId: new BN(decodedEscrowState.questionId, 8, "le").toNumber(),
         questionBidAmountXTokens: new BN(decodedEscrowState.questionBidAmountXTokens, 8, "le").toNumber(),
-        questionDuration: new BN(decodedEscrowState.questionDuration, 8, "le").toNumber()
+        questionDuration: new BN(decodedEscrowState.questionDuration, 8, "le").toNumber(),
+        escrowInitTimeStamp: new BN(decodedEscrowState.escrowInitTimeStamp, 8, "le").toNumber(),
     };
 }

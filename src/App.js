@@ -55,6 +55,7 @@ function App() {
   let [escrowQuestionId, setEscrowQuestionId] = useState('--');
   let [escrowQuestionBidAmountTokens, setEscrowQuestionBidAmountTokens] = useState('--');
   let [escrowQuestionDuration, setEscrowQuestionDuration] = useState('--');
+  let [escrowInitTime, setEscrowInitTime] = useState('--');
 
   const handleInitEscrow = async () => {
     try {
@@ -75,12 +76,13 @@ function App() {
       setEscrowQuestionId(result.questionId);
       setEscrowQuestionBidAmountTokens(result.questionBidAmountXTokens);
       setEscrowQuestionDuration(result.questionDuration);
+      setEscrowInitTime(result.escrowInitTimeStamp);
 
       const initializerMainAccountInfo = await getInfoForAccount(connection, result.initializerAccountPubkey.toString());
       const initializerTokenAccountInfo = await getInfoForTokenAccount(connection, initializerTempTokenAccountPubkey);
       const responderTokenAccountInfo = await getInfoForTokenAccount(connection, initializerResponderTokenAcctPublicKey.toString());
       const escrowTempTokenAccountInfo = await getInfoForTokenAccount(connection, result.tempTokenAccountPubkey.toString());
-
+         
       setInitializationStepAccountInfo({
         initializerMainAccountLamports: initializerMainAccountInfo.lamports,
         responderTokenAccountBalance: responderTokenAccountInfo.value.amount.toString(),
@@ -93,6 +95,7 @@ function App() {
   }
 
   const handleInitializerReset = () => {
+    //setSysAccountClockAddress(SYS_VAR_CLOCK_ADDRESS);
     setInitializerPrivateKey('');
     setInitializerTempTokenAccountPubkey('');
     setInitializerResponderTokenAcctPublicKey('');
@@ -108,7 +111,7 @@ function App() {
     setEscrowQuestionId(0);
     setEscrowQuestionBidAmountTokens(0);
     setEscrowQuestionDuration(0);
-
+    setEscrowInitTime(0);
   }
 
   const handleRespond = async () => {
@@ -126,7 +129,6 @@ function App() {
       const initializerMainAccountInfo = await getInfoForAccount(connection, escrowInitializerAccountPubkey);
       const initializerTokenAccountInfo = await getInfoForTokenAccount(connection, initializerTempTokenAccountPubkey);
       const responderTokenAccountInfo = await getInfoForTokenAccount(connection, responderTokenAccountPubkey);
-      // const escrowTempTokenAccountInfo = await getInfoForTokenAccount(connection, escrowTempTokenAccountPubkey);
 
       setRespondStepAccountInfo({
         initializerMainAccountLamports: initializerMainAccountInfo.lamports,
@@ -231,6 +233,10 @@ function App() {
               <p>{escrowQuestionDuration}</p>
             </div>
             <div className="text-field">
+              <p className="bold">Escrow Init Time:</p>
+              <p>{escrowInitTime}</p>
+            </div>
+            <div className="text-field">
               <p className="bold">Initializer Main Account:</p>
               <p>Pub Key: {escrowInitializerAccountPubkey ?? '--'}</p>
               <p>Funds (Lamports): {initializationStepAccountInfo?.initializerMainAccountLamports ?? '--'}</p>
@@ -295,6 +301,10 @@ function App() {
               <p className="bold">Escrow Temp Token Account:</p>
               <p>Pub Key: {escrowTempTokenAccountPubkey}</p>
               <p>Funds: {respondStepAccountInfo?.escrowTempTokenAccountBalance ?? '--'}</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Escrow Init Time:</p>
+              <p>{escrowInitTime}</p>
             </div>
           </div>
         </div>
