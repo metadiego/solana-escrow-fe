@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import * as escrowinit from './util/initEscrow';
 import * as escrowRespond from './util/respondEscrow';
+import * as escrowBid from './util/increaseEscrowBid';
 import * as escrowCancel from './util/cancelEscrow';
 import {buildLocalConnection, buildDevConnection, getInfoForAccount, getInfoForTokenAccount} from './util/getAccountInfo';
 
@@ -40,12 +41,22 @@ function App() {
   // Cancel Step Account Account Info
   let [cancelStepAccountInfo, setCancelStepAccountInfo] = useState({});
 
+  // Bid Step Account Account Info
+  let [bidStepAccountInfo, setBidStepAccountInfo] = useState({});
+
   // Receiver inputs
   let [responderPrivateKey, setResponderPrivateKey] = useState('');
   let [responderTokenAccountPubkey, setResponderTokenAccountPubkey] = useState('');
   let [responderEscrowProgramId, setResponderEscrowProgramId] = useState('');
   let [responderQuestionId, setResponderQuestionId] = useState(0);
   let [responderExpectedTokenAmount, setResponderExpectedTokenAmount] = useState(0);
+
+  // Upbid inputs
+  let [bidderPrivateKey, setBidderPrivateKey] = useState('');
+  let [bidderTokenAccountPubkey, setBidderTokenAccountPubkey] = useState('');
+  let [bidderEscrowProgramId, setBidderEscrowProgramId] = useState('');
+  let [bidderQuestionId, setBidderQuestionId] = useState(0);
+  let [bidderUpBidTokenAmount, setBidderUpBidTokenAmount] = useState(0);
 
   // Escrow State
   let [escrowAccountPubkey, setEscrowAccountPubkey] = useState('--');
@@ -147,6 +158,43 @@ function App() {
     setResponderEscrowProgramId('');
     setResponderQuestionId(0);
     setResponderExpectedTokenAmount(0);
+  }
+
+  const handleBid = async () => {
+    try {
+      const result =await escrowBid.upBid(
+        connection,
+        bidderPrivateKey,
+        bidderTokenAccountPubkey,
+        bidderUpBidTokenAmount,
+        bidderQuestionId,
+        escrowAccountPubkey,
+        bidderEscrowProgramId,
+      );
+
+      const initializerMainAccountInfo = await getInfoForAccount(connection, escrowInitializerAccountPubkey);
+      const initializerTokenAccountInfo = await getInfoForTokenAccount(connection, initializerTempTokenAccountPubkey);
+      const bidderTokenAccountInfo = await getInfoForTokenAccount(connection, bidderTokenAccountPubkey);
+      const escrowTempTokenAccountInfo = await getInfoForTokenAccount(connection, result.tempTokenAccountPubkey.toString());
+
+      setBidStepAccountInfo({
+        initializerMainAccountLamports: initializerMainAccountInfo.lamports,
+        initializerTokenAccountBalance: initializerTokenAccountInfo.value.amount.toString(),
+        bidderTokenAccountBalance: bidderTokenAccountInfo.value.amount.toString(),
+        escrowTempTokenAccountBalance: escrowTempTokenAccountInfo.value.amount.toString()});
+
+      alert("Success! Bidder has successfully up bid with escrow.");
+    } catch (err) {
+      alert(`Failed to complete escrow responder instruction: ${err.message}`);
+    }
+  }
+
+  const handleBidderReset = () => {
+    setBidderPrivateKey('');
+    setBidderTokenAccountPubkey('');
+    setBidderEscrowProgramId('');
+    setBidderQuestionId(0);
+    setBidderUpBidTokenAmount(0);
   }
 
   const handleCancel = () => {
@@ -301,6 +349,61 @@ function App() {
               <p className="bold">Escrow Temp Token Account:</p>
               <p>Pub Key: {escrowTempTokenAccountPubkey}</p>
               <p>Funds: {respondStepAccountInfo?.escrowTempTokenAccountBalance ?? '--'}</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Escrow Init Time:</p>
+              <p>{escrowInitTime}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bidder-container">
+          <div className="bidder-inputs">
+            <h1>Up Bid:</h1>
+            <div className="text-field">
+              <p className="bold">Bidder Main Account Private Key (as byte array from sollet.io, without the '[]')</p>
+              <TextField variant="outlined" value={bidderPrivateKey} onChange={(evt) => setBidderPrivateKey(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p className="bold">Bidder Sending Token Account Public Key:</p>
+              <TextField variant="outlined" value={bidderTokenAccountPubkey} onChange={(evt) => setBidderTokenAccountPubkey(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p className="bold">Bidder Question ID:</p>
+              <TextField variant="outlined" value={bidderQuestionId} onChange={(evt) => setBidderQuestionId(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p className="bold">Bidder Up Bid Token Amount:</p>
+              <TextField variant="outlined" value={bidderUpBidTokenAmount} onChange={(evt) => setBidderUpBidTokenAmount(evt.target.value)}/>
+            </div>
+            <div className="text-field">
+              <p className="bold">Escrow Program ID:</p>
+              <TextField variant="outlined" value={bidderEscrowProgramId} onChange={(evt) => setBidderEscrowProgramId(evt.target.value)}/>
+            </div>
+            <div className="button-container">
+              <Button size="large" variant="contained" onClick={() => handleBid()}>Bid</Button>
+              <Button size="large"  variant="contained" color="error" onClick={() => handleBidderReset()}>Reset Bidder's Data</Button>
+            </div>
+          </div>
+          <div className="bidder-data">
+            <div className="text-field">
+              <p className="bold">Initializer Main Account:</p>
+              <p>Pub Key: {escrowInitializerAccountPubkey ?? '--'}</p>
+              <p>Funds: {bidStepAccountInfo?.initializerMainAccountLamports ?? '--'}</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Initializer Temp Token account:</p>
+              <p>Pub Key: {initializerTempTokenAccountPubkey ?? '--'}</p>
+              <p>Funds: {bidStepAccountInfo?.initializerTokenAccountBalance ?? '--'}</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Bidder Sending Token Account:</p>
+              <p>Pub Key: {bidderTokenAccountPubkey ?? '--'}</p>
+              <p>Funds: {bidStepAccountInfo?.bidderTokenAccountBalance ?? '--'}</p>
+            </div>
+            <div className="text-field">
+              <p className="bold">Escrow Temp Token Account:</p>
+              <p>Pub Key: {escrowTempTokenAccountPubkey}</p>
+              <p>Funds: {bidStepAccountInfo?.escrowTempTokenAccountBalance ?? '--'}</p>
             </div>
             <div className="text-field">
               <p className="bold">Escrow Init Time:</p>
