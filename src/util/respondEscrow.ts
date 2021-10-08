@@ -58,7 +58,7 @@ export const respond = async (
             { pubkey: PDA[0], isSigner: false, isWritable: false},
             { pubkey: SYSVAR_CLOCK_PUBKEY, isSigner: false, isWritable: false },
         ]
-    })
+    });
 
     await connection.sendTransaction(
       new Transaction().add(respondInstruction), [responderAccount], {skipPreflight: false, preflightCommitment: 'singleGossip'});

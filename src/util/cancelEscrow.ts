@@ -27,7 +27,7 @@ export const cancelEscrow = async (
             ...new BN(initializerQuestionBidAmount).toArray("le", 8),
             ...new BN(initializerQuestionId).toArray("le", 8),
             ...new BN(0).toArray("le", 8),
-            ...new BN(0).toArray("le", 8)
+            ...new BN(0).toArray("le", 8),
           )
         ),
         keys: [
