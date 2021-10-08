@@ -1,5 +1,5 @@
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { Account, Connection, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Transaction, TransactionInstruction } from "@solana/web3.js";
+import { Account, Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import BN from "bn.js";
 
 export const cancelEscrow = async (
@@ -11,6 +11,7 @@ export const cancelEscrow = async (
     escrowProgramIdString: string,
     initializerQuestionId: number,
     initializerQuestionBidAmount: number) => {
+
     const initializerPrivateKeyByteArrayDecoded = initializerPrivateKeyByteArray.split(',').map(s => parseInt(s));
     const initializerAccount = new Account(initializerPrivateKeyByteArrayDecoded);
 

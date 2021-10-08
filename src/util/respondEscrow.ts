@@ -45,11 +45,7 @@ export const respond = async (
             ...new BN(responderExpectedXTokenAmount).toArray("le", 8),
             ...new BN(responderQuestionId).toArray("le", 8),
             ...new BN(0).toArray("le", 8),
-<<<<<<< HEAD
             ...new BN(0).toArray("le", 8)
-=======
-            ...new BN(0).toArray("le", 8),
->>>>>>> f434e12133ae279733f25466be59083cfc01b435
           )
         ),
         keys: [
