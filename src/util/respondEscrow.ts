@@ -42,10 +42,7 @@ export const respond = async (
         data: Buffer.from(
           Uint8Array.of(
             1,
-            ...new BN(responderExpectedXTokenAmount).toArray("le", 8),
             ...new BN(responderQuestionId).toArray("le", 8),
-            //...new BN(0).toArray("le", 8),
-            //...new BN(0).toArray("le", 8)
           )
         ),
         keys: [
@@ -59,6 +56,9 @@ export const respond = async (
             { pubkey: SYSVAR_CLOCK_PUBKEY, isSigner: false, isWritable: false },
         ]
     });
+
+    console.log("Buffer Data is:");
+    console.log(respondInstruction.data);
 
     await connection.sendTransaction(
       new Transaction().add(respondInstruction), [responderAccount], {skipPreflight: false, preflightCommitment: 'singleGossip'});

@@ -44,8 +44,6 @@ export const upBid = async (
             3,
             ...new BN(bidderUpBidTokenAmount).toArray("le", 8),
             ...new BN(bidderQuestionId).toArray("le", 8),
-            //...new BN(0).toArray("le", 8),
-            //...new BN(0).toArray("le", 8)
           )
         ),
         keys: [

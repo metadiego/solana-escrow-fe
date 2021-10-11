@@ -57,7 +57,6 @@ export const initEscrow = async (
         ...new BN(questionBidAmountXTokens).toArray("le", 8),
         ...new BN(questionId).toArray("le", 8),
         ...new BN(questionDuration).toArray("le", 8),
-        //...new BN(0).toArray("le", 8),
       )
     );
     console.log("Buffer Data is:");
